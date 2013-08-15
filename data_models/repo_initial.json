@@ -1,0 +1,12 @@
+{"_id": "GitHub ID",
+"full_name": "<username>/<repo_name>",
+"description": "description",
+"fork": "is fork?",
+"url": "complete info url",
+"languages_url": "languages url",
+"archive_url": "zip or tar download url",
+"html_url": "github web url",
+"owner": {"html_url": "github web url",
+          "type": "user type",
+          "repos_url": "repos url"}
+}
