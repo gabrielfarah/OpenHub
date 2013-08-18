@@ -23,7 +23,7 @@ def runTest(id, path, db):
         # for f in files if f.endswith('.txt')]
     for archivo in files:
         print archivo
-        countLettersFiles(archivo,letter)
+        count = countLettersFiles(archivo,letter)
     return count
 
 def countLettersFiles(path,letter):
