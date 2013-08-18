@@ -5,8 +5,8 @@ from pymongo import MongoClient
 #===============================================================================
 # Database connection
 #===============================================================================
-client = MongoClient('ds041188.mongolab.com', 41188)
-db = client.tesis
+client = MongoClient('ds041168.mongolab.com', 41168)
+db = client.tesisv2
 db.authenticate('user', 'P4ssW0rd122#')
 collection = db.listRepo
 
@@ -31,9 +31,10 @@ channel.exchange_declare(exchange='repo_classifier',
 #===============================================================================
 # Read from database and send to queue
 #===============================================================================
-for repo in collection.find({}, {"html_url", "languaje", "id", "downloads_url"}).limit(15):
+for repo in collection.find({}, {"id", "full_name", "name", "git_url", "languaje"}).limit(1):
     languaje = "Python"  # CHANGE
-    body = "%s::%i::%s" % (repo["html_url"], repo["id"], repo["downloads_url"])
+    print repo
+    body = "%s::%i::%s::%s" % (repo["git_url"], repo["id"], repo["full_name"], repo["name"])
     channel.basic_publish(exchange='repo_classifier',
                           routing_key=languaje,
                           body=body,
