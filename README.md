@@ -8,4 +8,4 @@ Bringing code together
 OpenHub Software Architecture
 -------------------------
 
-![alt tag](http://i.imgbox.com/acjif9u4.png)
+![OpenHub Architecture Overview](https://raw.github.com/gabrielfarah/OpenHub/master/Documentation/Images/OpenHub_Architecture.png)
