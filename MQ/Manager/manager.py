@@ -56,7 +56,8 @@ def callback(ch, method, properties, body):
     name= data[3]
     print data
     path = '%s/%s'%(baseDir,name)
-    if downRepo(git_url, path):
+    try:
+        downRepo(git_url, path)
         for dir in dirs:
             tests = glob.glob("%s/*.py" % dir) ## LISTA DE PRUBAS EN DIRS
             print (tests)
@@ -75,8 +76,9 @@ def callback(ch, method, properties, body):
         ch.basic_ack(delivery_tag=method.delivery_tag)
         deleteRepo(path)
         print "ready Esperando siguiente ..."
-    else:
-        print "manejar error"
+    except:
+         print "error:", sys.exc_info()
+        #TODO Terminarlos errores
     # except:
     #     print sys.exc_info()
     #     print "ERRORR"
