@@ -1,0 +1,6 @@
+distribute==0.6.34
+github3.py==0.7.0
+pika==0.9.13
+pymongo==2.5.2
+requests==1.2.3
+wsgiref==0.1.2
