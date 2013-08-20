@@ -52,8 +52,7 @@ def callback(ch, method, properties, body):
     data = body.split("::")
     git_url = data[0]
     id = data[1]
-    fullname = data[2]
-    name= data[3]
+    name= data[2]
     print data
     path = '%s/%s'%(baseDir,name)
     try:

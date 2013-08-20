@@ -34,7 +34,7 @@ channel.exchange_declare(exchange='repo_classifier',
 for repo in collection.find({}, {"id", "full_name", "name", "git_url", "languaje"}).limit(1):
     languaje = "Python"  # CHANGE
     print repo
-    body = "%s::%i::%s::%s" % (repo["git_url"], repo["id"], repo["full_name"], repo["name"])
+    body = "%s::%i::%s" % (repo["git_url"], repo["id"], repo["name"])
     channel.basic_publish(exchange='repo_classifier',
                           routing_key=languaje,
                           body=body,
