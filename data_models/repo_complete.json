@@ -1,5 +1,6 @@
 {"_id": "GitHub ID",
-"analized": "if analized",
+"analyzed_at": "if analized",
+"state": "current repo state",
 "name": "name",
 "full_name": "<username>/<repo_name>",
 "description": "description",
