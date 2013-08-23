@@ -1,5 +1,4 @@
 import os
-
 #Prueba
 #Nombre que identifica la pruena
 #Tipo de retorno de la prueba
@@ -7,7 +6,7 @@ import os
 #addData En caso de necesitar informacion extra de la db
 # true(1)/false(0)
 
-name = "numero de bs en el codigo"
+name = "numero de as en el codigo"
 type = 1
 
 
@@ -22,7 +21,7 @@ def runTest(id, path, db):
         for f in files]
         # for f in files if f.endswith('.txt')]
     for archivo in files:
-        print archivo
+        # print archivo
         count += countLettersFiles(archivo,letter)
     return count
 

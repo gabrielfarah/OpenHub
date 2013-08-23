@@ -31,7 +31,7 @@ channel.exchange_declare(exchange='repo_classifier',
 #===============================================================================
 # Read from database and send to queue
 #===============================================================================
-for repo in collection.find({}, {"id", "full_name", "name", "git_url", "languaje"}).limit(1):
+for repo in collection.find({}, {"id", "full_name", "name", "git_url", "languaje"}).limit(20):
     languaje = "Python"  # CHANGE
     print repo
     body = "%s::%i::%s" % (repo["git_url"], repo["id"], repo["name"])

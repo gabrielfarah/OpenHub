@@ -5,8 +5,8 @@ from os.path import isfile, join
 from pymongo import MongoClient
 
 #config
-hostDB = 'ds041188.mongolab.com'
-portDB = 41188
+hostDB = 'ds041168.mongolab.com'
+portDB = 41168
 userDB = 'user'
 passDB = 'P4ssW0rd122#'
 #ConfigRabbitMq
@@ -15,14 +15,19 @@ key = 'Python'
 queue = 'task_queue'
 dirs = {'secure', 'usability'}
 #otherCondig
-baseDir="zFileTemp"
+baseDir = "zFileTemp"
 
 #===============================================================================
 # Database connection
 #===============================================================================
-client = MongoClient(hostDB, portDB)
-db = client.tesis
-db.authenticate(userDB, passDB)
+# client = MongoClient(hostDB, portDB)
+# db = client.tesisv2
+# db.authenticate(userDB, passDB)
+# collection = db.listRepo
+
+client = MongoClient('ds041168.mongolab.com', 41168)
+db = client.tesisv2
+db.authenticate('user', 'P4ssW0rd122#')
 collection = db.listRepo
 
 #===============================================================================
@@ -45,39 +50,44 @@ def deleteRepo(path):
 #===============================================================================
 # Callback Function
 #===============================================================================
-# body = "%s::%i::%s::%s" % (repo["git_url"], repo["id"], repo["full_name"], repo["name"])
 def callback(ch, method, properties, body):
     print " [x] Received %r" % (body,)
-    # try:
     data = body.split("::")
-    git_url = data[0]
-    id = data[1]
-    name= data[2]
+    git_url = data[0];id = data[1];name = data[2]
+    repoJson={'id' : int(id)}
     print data
     path = '%s/%s'%(baseDir,name)
-    try:
-        downRepo(git_url, path)
-        for dir in dirs:
-            tests = glob.glob("%s/*.py" % dir) ## LISTA DE PRUBAS EN DIRS
-            print (tests)
-            for test in tests:
+    # try:
+    repoJson = collection.find_one({"id": int(id)})
+    downRepo(git_url, path)
+    for dir in dirs:
+        print dir
+        tests = glob.glob("%s/*.py" % dir) ## LISTA DE PRUBAS EN DIRS
+        print (tests)
+        for test in tests:
+            try:
                 m = imp.load_source(test, test)
-                if m.type == 1:
-                    print "tipo1"
-                elif m.type == 2:
-                    print "tipo2"
-                else:
-                    print "error"
-                info = m.runTest(id, path, data)
-                print "Respuesta"
-                print info
-                #TODO hacer algo con el resultado
-        ch.basic_ack(delivery_tag=method.delivery_tag)
-        deleteRepo(path)
-        print "ready Esperando siguiente ..."
-    except:
-         print "error:", sys.exc_info()
-        #TODO Terminarlos errores
+                res = m.runTest(id, path, data)
+                name = m.name
+                repoJson[dir] = []
+                data = "{'name':'%s','value':'%s'}}"%(name, res)
+                repoJson[dir].append(data)
+            except Exception as e:
+                print 'Test error %s %s'%(dir,test)
+                print str(e)
+                print "error:", sys.exc_info()
+
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+    print "save results..."
+    deleteRepo(path)
+    print "delete files..."
+    collection.update({"id": int(id)} , repoJson)
+    print "ready waiting next..."
+    # except:
+    #     print "General error"
+    #     collection.update({"id": int(id)} , repoJson)
+    #     print "error:", sys.exc_info()
+    #     #TODO Terminarlos errores
     # except:
     #     print sys.exc_info()
     #     print "ERRORR"
