@@ -4,7 +4,6 @@ import github3
 import pika
 from github3.models import GitHubError
 from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
 
 DATA_PATH = '../data'
 
@@ -44,59 +43,64 @@ def main(start_from=None):
 def start_crawl(repos, db_repos, gh, channel):
     last_id = None
     try:
-        for repo in repos:
-            try:
-                rep = gh.repository(repo.full_name.split('/')[0], repo.full_name.split('/')[1]).to_json()
-                to_insert = {"_id": rep[u'id'],
-                             "analized": False,
-                             "name": rep[u'name'],
-                             "full_name": rep[u'full_name'],
-                             "description": rep[u'description'],
-                             "fork": rep[u'fork'],
-                             "created_at": rep[u'created_at'],
-                             "updated_at": rep[u'updated_at'],
-                             "homepage": rep[u'homepage'],
-                             "size": rep[u'size'],
-                             "language": rep[u'language'],
-                             "has_issues": rep[u'has_issues'],
-                             "has_downloads": rep[u'has_downloads'],
-                             "has_wiki": rep[u'has_wiki'],
-                             "forks": rep[u'forks'],
-                             "open_issues": rep[u'open_issues'],
-                             "watchers": rep[u'watchers'],
-                             "url": rep[u'url'],
-                             "git_url": rep[u'git_url'],
-                             "issues_url": rep[u'issues_url'],
-                             "collaborators_url": rep[u'collaborators_url'],
-                             "languages_url": rep[u'languages_url'],
-                             "archive_url": rep[u'archive_url'],
-                             "comments_url": rep[u'comments_url'],
-                             "contributors_url": rep[u'contributors_url'],
-                             "html_url": rep[u'html_url'],
-                             "subscribers_url": rep[u'subscribers_url'],
-                             "stargazers_url": rep[u'stargazers_url'],
-                             "owner": {"html_url": rep[u'owner'][u'html_url'],
-                                       "type": rep[u'owner'][u'type'],
-                                       "repos_url": rep[u'owner'][u'repos_url']}
-                             }
-                last_id = db_repos.insert(to_insert)
-                print "Inserted repo with id", last_id
+        for r in repos:
+            repo = gh.repository(r.full_name.split('/')[0], r.full_name.split('/')[1])
+            json_repo = repo.to_json()
+            db_repo = db_repos.find_one({"_id": repo.id})
+            to_insert = {"_id": repo.id,
+                         "analyzed_at": None,
+                         "state": "pending",
+                         "name": repo.name,
+                         "full_name": repo.full_name,
+                         "description": repo.description,
+                         "fork": repo.fork,
+                         "created_at": repo.created_at,
+                         "updated_at": repo.updated_at,
+                         "homepage": repo.homepage,
+                         "size": repo.size,
+                         "language": repo.language,
+                         "has_issues": repo.has_issues,
+                         "has_downloads": repo.has_downloads,
+                         "has_wiki": repo.has_wiki,
+                         "forks": repo.forks,
+                         "open_issues": repo.open_issues,
+                         "watchers": repo.watchers,
+                         "url": json_repo[u'url'],
+                         "git_url": repo.git_url,
+                         "issues_url": json_repo[u'issues_url'],
+                         "collaborators_url": json_repo[u'collaborators_url'],
+                         "languages_url": json_repo[u'languages_url'],
+                         "archive_url": json_repo[u'archive_url'],
+                         "comments_url": json_repo[u'comments_url'],
+                         "contributors_url": json_repo[u'contributors_url'],
+                         "html_url": repo.html_url,
+                         "subscribers_url": json_repo[u'subscribers_url'],
+                         "stargazers_url": json_repo[u'stargazers_url'],
+                         "owner": {"html_url": json_repo[u'owner'][u'html_url'],
+                                   "type": json_repo[u'owner'][u'type'],
+                                   "repos_url": json_repo[u'owner'][u'repos_url']}
+                         }
+            last_id = repo.id
 
-                if to_insert['language'] in LANGUAGES:
-                    body = "%s::%i::%s::%s" % (to_insert["git_url"], to_insert["_id"], to_insert["full_name"], to_insert["name"])
-                    channel.basic_publish(exchange='repo_classifier',
-                                          routing_key=to_insert['language'],
-                                          body=body,
-                                          properties=pika.BasicProperties(
-                                              delivery_mode=2,  # make message persistent
-                                          ))
-                    print "\tSent to queue:", body
+            if db_repo:
+                del to_insert['_id']
+                to_insert['analyzed_at'] = db_repo.analyzed_at
+
+                if db_repo.state == "completed" and repo.updated_at > db_repo.analyzed_at:
+                    db_repos.update({"_id": last_id}, {"$set": to_insert})
+                    print "Updated repo with id", last_id
+                    push_to_queue(repo, channel)
+
                 else:
-                    print "\tCan't analyze language. Did not send to queue"
+                    to_insert['state'] = db_repo.state
+                    db_repos.update({"_id": last_id}, {"$set": to_insert})
+                    print "Updated repo with id", last_id
 
-            except DuplicateKeyError:
-                print "Repo already exists, skipping"
-                pass
+            else:
+                db_repos.insert(to_insert)
+                print "Inserted repo with id", last_id
+                push_to_queue(repo, channel)
+
     except GitHubError as e:
         global GH_CUR_USR
         print e
@@ -119,6 +123,20 @@ def get_queue_channel(host):
                              type='direct')
 
     return connection, channel
+
+
+def push_to_queue(repo, channel):
+    if repo.language in LANGUAGES:
+        body = "%s::%i::%s::%s" % (repo.git_url, repo._id, repo.full_name, repo.name)
+        channel.basic_publish(exchange='repo_classifier',
+                              routing_key=repo.language,
+                              body=body,
+                              properties=pika.BasicProperties(
+                                  delivery_mode=2,  # make message persistent
+                              ))
+        print "\tPushed to queue:", body
+    else:
+        print "\tCan't analyze language. Did not push to queue."
 
 
 def load_config():
@@ -145,6 +163,7 @@ def load_config():
     MONGO_PORT = int(data['MONGO_PORT'])
     mongo_cfg.close()
 
+
 if __name__ == '__main__':
     if len(sys.argv) == 2:
         arg = None
@@ -156,5 +175,3 @@ if __name__ == '__main__':
         main(arg)
     else:
         main()
-
-# TODO Revisar antes de actualizar la ultima fecha de update del repositorio
