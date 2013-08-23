@@ -1,9 +1,6 @@
 #!/usr/bin/env python
-import pika, logging, imp, glob, urllib, gzip, shutil, git, os, sys
-from os import listdir
-from os.path import isfile, join
+import pika, logging, imp, glob, shutil, git, os, sys
 from pymongo import MongoClient
-
 #config
 hostDB = 'ds041168.mongolab.com'
 portDB = 41168

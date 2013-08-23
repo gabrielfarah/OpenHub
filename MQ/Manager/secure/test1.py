@@ -6,7 +6,7 @@ import os
 #addData En caso de necesitar informacion extra de la db
 # true(1)/false(0)
 
-name = "numero de as en el codigo"
+name = "occurrences of a"
 type = 1
 
 

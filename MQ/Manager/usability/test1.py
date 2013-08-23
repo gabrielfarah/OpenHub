@@ -7,7 +7,7 @@ import os
 #addData En caso de necesitar informacion extra de la db
 # true(1)/false(0)
 
-name = "numero de bs en el codigo"
+name = "occurrences of b"
 type = 1
 
 
