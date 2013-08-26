@@ -83,3 +83,9 @@ nosetests.xml
 
 # Data folder (pwds and such)
 data/
+
+# Classifier files
+*.npy
+*.rdoc
+*.md
+*.pkl
