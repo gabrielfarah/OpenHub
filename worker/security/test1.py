@@ -15,18 +15,19 @@ def runTest(id, path, db):
     print 'reading files'
     #numbres of a
     count = 0
-    letter='a'
+    letter = 'a'
     files = [os.path.join(dirpath, f)
-        for dirpath, dirnames, files in os.walk(path)
-        for f in files]
+             for dirpath, dirnames, files in os.walk(path)
+             for f in files]
         # for f in files if f.endswith('.txt')]
     for archivo in files:
         # print archivo
-        count += countLettersFiles(archivo,letter)
+        count += countLettersFiles(archivo, letter)
     return count
 
-def countLettersFiles(path,letter):
-    count=0
+
+def countLettersFiles(path, letter):
+    count = 0
     with open(path, 'r') as infile:
         data = infile.read()
         for c in data:
