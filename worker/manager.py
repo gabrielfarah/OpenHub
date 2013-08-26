@@ -147,11 +147,11 @@ def load_config():
 
     rabbit_cfg = open(DATA_PATH + "/rabbit.json")
     data = json.load(rabbit_cfg)
-    RABBIT_HOST = data['RABBIT_HOST']
-    RABBIT_USER = data['RABBIT_USER']
-    RABBIT_PWD = data['RABBIT_PWD']
-    RABBIT_KEY = data['RABBIT_KEY']
-    RABBIT_QUEUE = data['RABBIT_QUEUE']
+    RABBIT_HOST = str(data['RABBIT_HOST'])
+    RABBIT_USER = str(data['RABBIT_USER'])
+    RABBIT_PWD = str(data['RABBIT_PWD'])
+    RABBIT_KEY = str(data['RABBIT_KEY'])
+    RABBIT_QUEUE = str(data['RABBIT_QUEUE'])
     rabbit_cfg.close()
 
     d = open(DATA_PATH + "/analyzers.json")

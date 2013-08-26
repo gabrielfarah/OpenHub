@@ -12,6 +12,10 @@ DATA_PATH = '../data'
 LANGUAGES = []
 
 RABBIT_HOST = ''
+RABBIT_USER = ''
+RABBIT_PWD = ''
+RABBIT_KEY = ''
+RABBIT_QUEUE = ''
 
 MONGO_HOST = ''
 MONGO_PORT = 0
@@ -109,7 +113,7 @@ def start_crawl(repos, db_repos, gh, channel):
                     print "Updated repo with id", last_id
 
             else:
-                db_repos.insert(to_insert)
+                last_id = db_repos.insert(to_insert)
                 print "Inserted repo with id", last_id
                 push_to_queue(repo, channel)
 
@@ -158,11 +162,15 @@ def push_to_queue(repo, channel):
 
 
 def load_config():
-    global RABBIT_HOST, LANGUAGES, GH_USERS, MONGO_PWD, MONGO_USER, MONGO_HOST, MONGO_PORT, MONGO_DB, MONGO_COLL
+    global RABBIT_HOST, RABBIT_USER, RABBIT_PWD, RABBIT_KEY, RABBIT_QUEUE, LANGUAGES, GH_USERS, MONGO_PWD, MONGO_USER, MONGO_HOST, MONGO_PORT, MONGO_DB, MONGO_COLL
 
     rabbit_cfg = open(DATA_PATH + "/rabbit.json")
     data = json.load(rabbit_cfg)
-    RABBIT_HOST = data['RABBIT_HOST']
+    RABBIT_HOST = str(data['RABBIT_HOST'])
+    RABBIT_USER = str(data['RABBIT_USER'])
+    RABBIT_PWD = str(data['RABBIT_PWD'])
+    RABBIT_KEY = str(data['RABBIT_KEY'])
+    RABBIT_QUEUE = str(data['RABBIT_QUEUE'])
     rabbit_cfg.close()
 
     langs = open(DATA_PATH + "/langs.json")
