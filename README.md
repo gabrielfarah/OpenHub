@@ -8,4 +8,4 @@ Bringing code together
 OpenHub Software Architecture
 -------------------------
 
-![OpenHub Architecture Overview](https://raw.github.com/gabrielfarah/OpenHub/master/Documentation/Images/OpenHub_Architecture.png)
+![OpenHub Architecture Overview](https://raw.github.com/gabrielfarah/OpenHub/master/docs/images/OpenHub_Architecture.png)
