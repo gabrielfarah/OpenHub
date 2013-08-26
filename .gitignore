@@ -88,4 +88,5 @@ data/
 *.npy
 *.rdoc
 *.md
+!README.md
 *.pkl
