@@ -127,11 +127,12 @@ def callback(ch, method, properties, body):
         print "Delete files..."
         collection.update({"_id": int(repo_id)}, repoJson)
         print "Ready, waiting for next repo..."
-    except:
-        print "General error"
+    except Exception as e:
+        print "General error:", e
         collection.update({"_id": int(repo_id)}, repoJson)
-        print "Error:", sys.exc_info()
-        # TODO Terminar los errores
+        print "Will continue with next repo..."
+        pass
+        # TODO Terminar de manejar los errores
 
 
 def load_config():

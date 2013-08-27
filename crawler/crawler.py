@@ -139,7 +139,7 @@ def start_crawl(repos, db_repos, gh, channel):
             return True, last_id
     # except (KeyboardInterrupt, SystemExit):
     #     raise
-    # except:
+    # except Exception as e:
     #     print "Unexpected error:", sys.exc_info()[0]
     #     print "Restarting crawl from last inserted id"
     #     return False, last_id
