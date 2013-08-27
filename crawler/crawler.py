@@ -120,9 +120,11 @@ def start_crawl(repos, db_repos, gh, channel):
     except GitHubError as e:
         global GH_CUR_USR
         print e
-        print "Limit reached, switching users"
+        print "Limit reached, switching users and restarting from last inserted id"
         GH_CUR_USR = (GH_CUR_USR + 1) % len(GH_USERS)
         return last_id
+    except (KeyboardInterrupt, SystemExit):
+        raise
     except:
         print "Unexpected error:", sys.exc_info()[0]
         print "Restarting crawl from last inserted id"
@@ -156,9 +158,9 @@ def push_to_queue(repo, channel):
                               properties=pika.BasicProperties(
                                   delivery_mode=2,  # make message persistent
                               ))
-        print "\tPushed to queue:", body
+        print " [*] Pushed to queue:", body
     else:
-        print "\tCan't analyze language. Did not push to queue."
+        print " [*] Can't analyze language. Did not push to queue."
 
 
 def load_config():
