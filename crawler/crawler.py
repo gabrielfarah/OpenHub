@@ -100,9 +100,9 @@ def start_crawl(repos, db_repos, gh, channel):
 
             if db_repo:
                 del to_insert['_id']
-                to_insert['analyzed_at'] = db_repo.analyzed_at
+                to_insert['analyzed_at'] = db_repo[u'analyzed_at']
 
-                if db_repo.state == "completed" and repo.updated_at > db_repo.analyzed_at:
+                if db_repo[u'state'] == "completed" and repo.updated_at > db_repo[u'analyzed_at']:
                     db_repos.update({"_id": last_id}, {"$set": to_insert})
                     print "Updated repo with id", last_id
                     push_to_queue(repo, channel)
