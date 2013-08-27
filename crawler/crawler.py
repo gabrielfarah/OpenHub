@@ -123,12 +123,12 @@ def start_crawl(repos, db_repos, gh, channel):
         print "Limit reached, switching users and restarting from last inserted id"
         GH_CUR_USR = (GH_CUR_USR + 1) % len(GH_USERS)
         return last_id
-    except (KeyboardInterrupt, SystemExit):
-        raise
-    except:
-        print "Unexpected error:", sys.exc_info()[0]
-        print "Restarting crawl from last inserted id"
-        return last_id
+    # except (KeyboardInterrupt, SystemExit):
+    #     raise
+    # except:
+    #     print "Unexpected error:", sys.exc_info()[0]
+    #     print "Restarting crawl from last inserted id"
+    #     return last_id
 
 
 def get_queue_channel(host):
