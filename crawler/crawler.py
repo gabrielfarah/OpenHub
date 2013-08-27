@@ -30,26 +30,33 @@ GH_CUR_USR = 0
 
 def main(start_from=None):
 
+    # Load config information
     load_config()
-    last_id = start_from
+
+    # Connect to RabbitMQ Queue
     connection, channel = get_queue_channel(RABBIT_HOST)
+
+    # Connect to databse
+    client = MongoClient(MONGO_HOST, MONGO_PORT)
+    db = client[MONGO_DB]
+    db.authenticate(MONGO_USER, MONGO_PWD)
+    db_repos = db[MONGO_COLL]
+
+    last_id = start_from  # Last id variable to be advanced
+    reauth = True  # Reauth variable to check if we need to reauthenticate for GitHub
+    gh = None  # Just for good measure
 
     while 1:
         # Authenticate on GitHub and get all repos
-        gh = github3.login(GH_USERS[GH_CUR_USR]['login'], GH_USERS[GH_CUR_USR]['pwd'])
+        if reauth:
+            gh = github3.login(GH_USERS[GH_CUR_USR]['login'], GH_USERS[GH_CUR_USR]['pwd'])
         repos = gh.iter_all_repos(since=last_id)
 
-        # Connect to databse
-        client = MongoClient(MONGO_HOST, MONGO_PORT)
-        db = client[MONGO_DB]
-        db.authenticate(MONGO_USER, MONGO_PWD)
-        db_repos = db[MONGO_COLL]
-
         # Crawl repos
-        last_id = start_crawl(repos, db_repos, gh, channel)
+        reauth, last_id = start_crawl(repos, db_repos, gh, channel)
 
-        #Close connection to databse
-        client.close()
+    #Close connection to databse
+    client.close()
 
     #Close connection to queue
     channel.close()
@@ -60,6 +67,7 @@ def start_crawl(repos, db_repos, gh, channel):
     last_id = None
     try:
         for r in repos:
+            last_id = r.id
             repo = gh.repository(r.full_name.split('/')[0], r.full_name.split('/')[1])
             json_repo = repo.to_json()
             db_repo = db_repos.find_one({"_id": repo.id})
@@ -96,7 +104,6 @@ def start_crawl(repos, db_repos, gh, channel):
                                    "type": json_repo[u'owner'][u'type'],
                                    "repos_url": json_repo[u'owner'][u'repos_url']}
                          }
-            last_id = repo.id
 
             if db_repo:
                 del to_insert['_id']
@@ -104,12 +111,14 @@ def start_crawl(repos, db_repos, gh, channel):
 
                 if db_repo[u'state'] == "completed" and repo.updated_at > db_repo[u'analyzed_at']:
                     db_repos.update({"_id": last_id}, {"$set": to_insert})
+                    last_id = repo.id
                     print "Updated repo with id", last_id
                     push_to_queue(repo, channel)
 
                 else:
                     to_insert['state'] = db_repo[u'state']
                     db_repos.update({"_id": last_id}, {"$set": to_insert})
+                    last_id = repo.id
                     print "Updated repo with id", last_id
 
             else:
@@ -118,17 +127,20 @@ def start_crawl(repos, db_repos, gh, channel):
                 push_to_queue(repo, channel)
 
     except GitHubError as e:
-        global GH_CUR_USR
-        print e
-        print "Limit reached, switching users and restarting from last inserted id"
-        GH_CUR_USR = (GH_CUR_USR + 1) % len(GH_USERS)
-        return last_id
+        if e.code != 403:
+            return False, last_id
+        else:
+            global GH_CUR_USR
+            print e
+            print "Limit reached, switching users and restarting from last inserted id", last_id
+            GH_CUR_USR = (GH_CUR_USR + 1) % len(GH_USERS)
+            return True, last_id
     # except (KeyboardInterrupt, SystemExit):
     #     raise
     # except:
     #     print "Unexpected error:", sys.exc_info()[0]
     #     print "Restarting crawl from last inserted id"
-    #     return last_id
+    #     return False, last_id
 
 
 def get_queue_channel(host):
