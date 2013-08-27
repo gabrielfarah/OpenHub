@@ -151,7 +151,7 @@ def get_queue_channel(host):
 
 def push_to_queue(repo, channel):
     if repo.language in LANGUAGES:
-        body = "%s::%i::%s::%s" % (repo.git_url, repo.id, repo.full_name, repo.name)
+        body = "%s::%i::%s" % (repo.git_url, repo.id, repo.name)
         channel.basic_publish(exchange='repo_classifier',
                               routing_key=repo.language,
                               body=body,
