@@ -121,16 +121,17 @@ def callback(ch, method, properties, body):
                     print str(e)
                     print "Error:", sys.exc_info()
 
-        ch.basic_ack(delivery_tag=method.delivery_tag)
         print "Save results..."
         delete_repo(path)
         print "Delete files..."
         collection.update({"_id": int(repo_id)}, repoJson)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
         print "Ready, waiting for next repo..."
     except Exception as e:
         print "General error:", e
         collection.update({"_id": int(repo_id)}, repoJson)
         print "Will continue with next repo..."
+        ch.basic_ack(delivery_tag=method.delivery_tag)
         pass
         # TODO Terminar de manejar los errores
 
