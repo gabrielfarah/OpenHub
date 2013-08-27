@@ -69,6 +69,8 @@ def start_crawl(repos, db_repos, gh, channel):
         for r in repos:
             last_id = r.id
             repo = gh.repository(r.full_name.split('/')[0], r.full_name.split('/')[1])
+            if repo is None:
+                continue
             json_repo = repo.to_json()
             db_repo = db_repos.find_one({"_id": repo.id})
             to_insert = {"_id": repo.id,

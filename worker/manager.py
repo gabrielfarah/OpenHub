@@ -101,45 +101,37 @@ def callback(ch, method, properties, body):
     repoJson = {'_id': int(repo_id)}
     print data
     path = '%s/%s' % (BASE_DIR, name)
-    # try:
-    repoJson = collection.find_one({"_id": int(repo_id)})
-    down_repo(git_url, path)
-    for d in dirs:
-        print d
-        tests = glob.glob("%s/*.py" % d)  # Test list in the directories
-        print (tests)
-        for test in tests:
-            try:
-                m = imp.load_source(test, test)
-                res = m.runTest(repo_id, path, data)
-                name = m.name
-                repoJson[d] = []
-                data = "{'name':'%s','value':'%s'}}" % (name, res)
-                repoJson[d].append(data)
-            except Exception as e:
-                print 'Test error %s %s' % (d, test)
-                print str(e)
-                print "Error:", sys.exc_info()
+    try:
+        repoJson = collection.find_one({"_id": int(repo_id)})
+        down_repo(git_url, path)
+        for d in dirs:
+            print d
+            tests = glob.glob("%s/*.py" % d)  # Test list in the directories
+            print (tests)
+            for test in tests:
+                try:
+                    m = imp.load_source(test, test)
+                    res = m.runTest(repo_id, path, data)
+                    name = m.name
+                    repoJson[d] = []
+                    data = "{'name':'%s','value':'%s'}}" % (name, res)
+                    repoJson[d].append(data)
+                except Exception as e:
+                    print 'Test error %s %s' % (d, test)
+                    print str(e)
+                    print "Error:", sys.exc_info()
 
-    ch.basic_ack(delivery_tag=method.delivery_tag)
-    print "Save results..."
-    delete_repo(path)
-    print "Delete files..."
-    collection.update({"_id": int(repo_id)}, repoJson)
-    print "Ready, waiting for next repo..."
-    # except:
-    #     print "General error"
-    #     collection.update({"id": int(repo_id)} , repoJson)
-    #     print "error:", sys.exc_info()
-    #     #TODO Terminarlos errores
-    # except:
-    #     print sys.exc_info()
-    #     print "ERRORR"
-
-# def initRabbitMq(host="localhost", queue="task_queue", key="Python"):
-#     print host
-#     print queue
-#     print key
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+        print "Save results..."
+        delete_repo(path)
+        print "Delete files..."
+        collection.update({"_id": int(repo_id)}, repoJson)
+        print "Ready, waiting for next repo..."
+    except:
+        print "General error"
+        collection.update({"_id": int(repo_id)}, repoJson)
+        print "Error:", sys.exc_info()
+        # TODO Terminar los errores
 
 
 def load_config():
