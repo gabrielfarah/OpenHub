@@ -10,26 +10,26 @@ from sklearn.svm import LinearSVC
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.externals import joblib
+import os
+import documentation_analysis
 
-
-X_train = np.array(["new york is a hell of a town",
-                    "new york was originally dutch",
-                    "the big apple is great",
-                    "new york is also called the big apple",
-                    "nyc is nice",
-                    "people abbreviate new york city as nyc",
-                    "the capital of great britain is london",
-                    "london is in the uk",
-                    "london is in england",
-                    "london is in great britain",
-                    "it rains a lot in london",
-                    "london hosts the british museum",
-                    "new york is great and so is london",
-                    "i like london better than new york"])
-y_train = [[0],[0],[0],[0],[0],[0],[1],[1],[1],[1],[1],[1],[0,1],[0,1]]
-X_test = np.array(['nice day in nyc',
-                   'welcome to london',
-                   'hello welcome to new york. enjoy it here and london too'])   
+training_list_X = []
+training_list_Y = []
+training_data_paths = ["./training_data/bad/","./training_data/average/","./training_data/good/"]
+for path in training_data_paths:
+    files = [ f for f in os.listdir(path) ]
+    for f in files:
+        clean_html = documentation_analysis.load_and_clear_file(path + f)
+        result_list = documentation_analysis.features_extraction(clean_html)
+        training_list_X.append(result_list)
+        if path is "./training_data/bad/":
+            training_list_Y.append([0])
+        elif path is "./training_data/average/":
+            training_list_Y.append([1])
+        else:
+            training_list_Y.append([2])
+X_train = np.array(training_list_X)
+y_train = training_list_Y   
 #===============================================================================
 # target_names = ['New York', 'London']
 #===============================================================================
