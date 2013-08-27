@@ -108,7 +108,7 @@ def start_crawl(repos, db_repos, gh, channel):
                     push_to_queue(repo, channel)
 
                 else:
-                    to_insert['state'] = db_repo.state
+                    to_insert['state'] = db_repo[u'state']
                     db_repos.update({"_id": last_id}, {"$set": to_insert})
                     print "Updated repo with id", last_id
 
