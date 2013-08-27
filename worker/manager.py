@@ -46,9 +46,9 @@ def main():
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 
     # RabbitMQ connection
-    # server_credentials = pika.PlainCredentials(RABBIT_USER, RABBIT_PWD)
-    # connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', credentials=server_credentials))
-    connection = pika.BlockingConnection(pika.ConnectionParameters(RABBIT_HOST))
+    server_credentials = pika.PlainCredentials(RABBIT_USER, RABBIT_PWD)
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_HOST, credentials=server_credentials))
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(RABBIT_HOST))
 
     # Queue and Exchange declaration
     channel = connection.channel()

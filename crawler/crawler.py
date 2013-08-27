@@ -135,9 +135,9 @@ def get_queue_channel(host):
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.CRITICAL)
 
     # RabbitMQ connection
-    # server_credentials = pika.PlainCredentials('admin', 'openhub')
-    # connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost', credentials=server_credentials))
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host))
+    server_credentials = pika.PlainCredentials('admin', 'openhub')
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBIT_HOST, credentials=server_credentials))
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(host))
 
     # Queue declaration
     channel = connection.channel()
