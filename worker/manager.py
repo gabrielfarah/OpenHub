@@ -8,6 +8,7 @@ import git
 import os
 import sys
 import json
+import datetime
 from pymongo import MongoClient
 
 DATA_PATH = '../data'
@@ -93,46 +94,59 @@ def callback(ch, method, properties, body):
     """Queue callback function.
     Will be executed when the queue pops this worker
     """
-    print " [x] Received %r" % (body,)
     data = body.split("::")
     git_url = data[0]
     repo_id = data[1]
     name = data[2]
-    repoJson = {'_id': int(repo_id)}
-    print data
+    # repoJson = {'_id': int(repo_id)}
+    print " [x] Received %r" % (data,)
+
     path = '%s/%s' % (BASE_DIR, name)
     try:
         repoJson = collection.find_one({"_id": int(repo_id)})
         down_repo(git_url, path)
+        completed = True
+
         for d in dirs:
-            print d
+            print "Analyzing %s..." % d
             tests = glob.glob("%s/*.py" % d)  # Test list in the directories
-            print (tests)
+
+            print "Current tests for %s: %s" % d, tests
             for test in tests:
+                m = imp.load_source(test, test)
+                name = m.name
                 try:
-                    m = imp.load_source(test, test)
                     res = m.runTest(repo_id, path, data)
-                    name = m.name
                     repoJson[d] = []
-                    data = "{'name':'%s','value':'%s'}}" % (name, res)
+                    data = {'name': name, 'value': res}
                     repoJson[d].append(data)
                 except Exception as e:
                     print 'Test error %s %s' % (d, test)
-                    print str(e)
-                    print "Error:", sys.exc_info()
+                    print e
+                    data = {'name': name, 'value': "Error:" + e.message}
+                    repoJson[d].append(data)
+                    completed = False
+                    pass
 
-        print "Save results..."
-        delete_repo(path)
-        print "Delete files..."
+        repoJson['analyzed_at'] = datetime.datetime.now()
+        repoJson['state'] = 'completed' if completed else 'pending'
+        print "Saving results to databse..."
         collection.update({"_id": int(repo_id)}, repoJson)
+
+        print "Deleting files..."
+        delete_repo(path)
+
         ch.basic_ack(delivery_tag=method.delivery_tag)
         print "Ready, waiting for next repo..."
+
     except Exception as e:
         print "General error:", e
-        collection.update({"_id": int(repo_id)}, repoJson)
-        print "Will continue with next repo..."
+
+        collection.update({"_id": int(repo_id)}, {'$set': {'state': 'failed', 'analyzed_at': datetime.datetime.now()}})
+        print "Updated repo with failed status"
+
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        pass
+        print "Will continue. Waiting for next repo..."
         # TODO Terminar de manejar los errores
 
 

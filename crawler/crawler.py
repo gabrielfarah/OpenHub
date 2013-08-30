@@ -53,7 +53,7 @@ def main(start_from=None):
         repos = gh.iter_all_repos(since=last_id)
 
         # Crawl repos
-        reauth, last_id = start_crawl(repos, db_repos, gh, channel)
+        reauth, last_id = start_crawl(repos, db_repos, gh, channel, last_id)
 
     #Close connection to databse
     client.close()
@@ -63,8 +63,7 @@ def main(start_from=None):
     connection.close()
 
 
-def start_crawl(repos, db_repos, gh, channel):
-    last_id = None
+def start_crawl(repos, db_repos, gh, channel, last_id):
     try:
         for r in repos:
             last_id = r.id
@@ -111,7 +110,7 @@ def start_crawl(repos, db_repos, gh, channel):
                 del to_insert['_id']
                 to_insert['analyzed_at'] = db_repo[u'analyzed_at']
 
-                if db_repo[u'state'] == "completed" and repo.updated_at > db_repo[u'analyzed_at']:
+                if (db_repo[u'state'] == "completed" and repo.updated_at > db_repo[u'analyzed_at']) or (db_repo[u'state'] == "pending" or db_repo[u'state'] == "failed"):
                     db_repos.update({"_id": last_id}, {"$set": to_insert})
                     last_id = repo.id
                     print "Updated repo with id", last_id
@@ -121,7 +120,7 @@ def start_crawl(repos, db_repos, gh, channel):
                     to_insert['state'] = db_repo[u'state']
                     db_repos.update({"_id": last_id}, {"$set": to_insert})
                     last_id = repo.id
-                    print "Updated repo with id", last_id
+                    print "Updated repo with id %s. No analysis necessary. Will not push to queue" % last_id
 
             else:
                 last_id = db_repos.insert(to_insert)
