@@ -1,4 +1,5 @@
 import os
+
 #Prueba
 #Nombre que identifica la pruena
 #Tipo de retorno de la prueba
@@ -6,16 +7,16 @@ import os
 #addData En caso de necesitar informacion extra de la db
 # true(1)/false(0)
 
-name = "occurrences of a"
+name = "occurrences of b"
 type = 1
 
 
-def runTest(id, path, db):
+def run_test(id, path, db):
     print "secure 1"
     print 'reading files'
     #numbres of a
     count = 0
-    letter = 'a'
+    letter = 'b'
     files = [os.path.join(dirpath, f)
              for dirpath, dirnames, files in os.walk(path)
              for f in files]

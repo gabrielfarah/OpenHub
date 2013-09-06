@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 import pika
 import logging
-import imp
+import importlib
 import glob
 import shutil
 import git
 import os
-import sys
 import json
 import datetime
 from pymongo import MongoClient
@@ -96,42 +95,42 @@ def callback(ch, method, properties, body):
     """
     data = body.split("::")
     git_url = data[0]
-    repo_id = data[1]
+    repo_id = int(data[1])
     name = data[2]
-    # repoJson = {'_id': int(repo_id)}
     print " [x] Received %r" % (data,)
 
     path = '%s/%s' % (BASE_DIR, name)
     try:
-        repoJson = collection.find_one({"_id": int(repo_id)})
+        repo_json = collection.find_one({"_id": repo_id})
         down_repo(git_url, path)
         completed = True
 
         for d in dirs:
             print "Analyzing %s..." % d
-            tests = glob.glob("%s/*.py" % d)  # Test list in the directories
+            tests = [p.replace('/', '.') for p in glob.glob("%s/*" % d) if not p.endswith(".py")]  # Test list in the directories
 
             print "Current tests for %s: %s" % d, tests
             for test in tests:
-                m = imp.load_source(test, test)
-                name = m.name
+                m = importlib.import_module(test + ".main")
+                test_name = test.split()[1]
+
                 try:
-                    res = m.runTest(repo_id, path, data)
-                    repoJson[d] = []
-                    data = {'name': name, 'value': res}
-                    repoJson[d].append(data)
+                    res = m.run_test(repo_id, path, data)
+                    repo_json[d] = []
+                    data = {'name': test_name, 'value': res}
+                    repo_json[d].append(data)
                 except Exception as e:
                     print 'Test error %s %s' % (d, test)
                     print e
-                    data = {'name': name, 'value': "Error:" + e.message}
-                    repoJson[d].append(data)
+                    data = {'name': test_name, 'value': "Error:" + e.message}
+                    repo_json[d].append(data)
                     completed = False
                     pass
 
-        repoJson['analyzed_at'] = datetime.datetime.now()
-        repoJson['state'] = 'completed' if completed else 'pending'
+        repo_json['analyzed_at'] = datetime.datetime.now()
+        repo_json['state'] = 'completed' if completed else 'pending'
         print "Saving results to databse..."
-        collection.update({"_id": int(repo_id)}, repoJson)
+        collection.update({"_id": repo_id}, repo_json)
 
         print "Deleting files..."
         delete_repo(path)
@@ -142,7 +141,7 @@ def callback(ch, method, properties, body):
     except Exception as e:
         print "General error:", e
 
-        collection.update({"_id": int(repo_id)}, {'$set': {'state': 'failed', 'analyzed_at': datetime.datetime.now()}})
+        collection.update({"_id": repo_id}, {'$set': {'state': 'failed', 'analyzed_at': datetime.datetime.now()}})
         print "Updated repo with failed status"
 
         ch.basic_ack(delivery_tag=method.delivery_tag)

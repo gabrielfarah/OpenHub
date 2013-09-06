@@ -90,3 +90,4 @@ data/
 *.md
 !README.md
 *.pkl
+*.rst
