@@ -83,6 +83,7 @@ nosetests.xml
 
 # Data folder (pwds and such)
 data/
+data.json
 
 # Classifier files
 *.npy

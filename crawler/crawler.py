@@ -90,6 +90,7 @@ def start_crawl(repos, db_repos, gh, channel, last_id):
                          "forks": repo.forks,
                          "open_issues": repo.open_issues,
                          "watchers": repo.watchers,
+                         "network_count": json_repo[u'network_count'],
                          "url": json_repo[u'url'],
                          "git_url": repo.git_url,
                          "issues_url": json_repo[u'issues_url'],

@@ -5,21 +5,22 @@ Created on Sep 18, 2013
 '''
 from radon.complexity import cc_visit, average_complexity
 import os
-def test_sfsd():
-    print 'a'
-#===============================================================================
-# returns a list of blocks with respect to complexity. A block is a either Function object or a Class object. 
-#===============================================================================
+
+
 def get_cyclomatic_complexity(content):
+    '''
+    Returns a list of blocks with respect to complexity. A block is a either Function object or a Class object.
+    '''
     return cc_visit(content)
 
-def main(rootdir):
+
+def run_test(id, path, repo_db):
     num_files = 0
     non_mantenible_files = 0
     total_cyclomatic_complexity = 0
     num_tests = 0
     response = {}
-    for root, subFolders, files in os.walk(rootdir):
+    for root, subFolders, files in os.walk(path):
         for file in files:
             if (file.endswith('.py')):
                 #print file
@@ -41,9 +42,10 @@ def main(rootdir):
                                 num_tests += 1
                 content_file.close()
     response["avg_cc"] = total_cyclomatic_complexity/num_files
-    response["non_mantenible_files"] = non_mantenible_files 
+    response["non_mantenible_files"] = non_mantenible_files
     response["test_coverage"] = num_tests - total_cyclomatic_complexity
     return response
 
+
 if __name__ == '__main__':
-    main(os.path.dirname(__file__))
+    run_test(None, os.path.dirname(__file__), None)
