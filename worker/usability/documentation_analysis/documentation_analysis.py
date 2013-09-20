@@ -25,22 +25,25 @@ def features_extraction(clean_html):
 def load_and_clear_file(local_path):
     with open(local_path, 'r') as content_file:
         content = content_file.read()
-        return markdown(content)
+    content_file.close()
+    return markdown(content)
 
 def analyze(local_code_path):
-    clean_html = load_and_clear_file(local_code_path)
-    result_list = features_extraction(clean_html)
-    #Load the saved classifier
-    classifier = joblib.load('./pickles/classifier.pkl')
-    #convert our list of headers to an array
-    X_test = np.array([result_list])
-    target_names = ['Bad', 'Average', 'Good']
-    #predict the class
-    predicted = classifier.predict(X_test)
-    for labels in  predicted:
-        return '%s' % (', '.join(target_names[x] for x in labels))
+    for root, subFolders, files in os.walk(local_code_path):
+        for file in files:
+            if (file.endswith('.md')):
+                clean_html = load_and_clear_file(os.path.join(root, file))
+                result_list = features_extraction(clean_html)
+                #Load the saved classifier
+                classifier = joblib.load('./pickles/classifier.pkl')
+                #convert our list of headers to an array
+                X_test = np.array([result_list])
+                target_names = ['Bad', 'Average', 'Good']
+                #predict the class
+                predicted = classifier.predict(X_test)
+                for labels in  predicted:
+                    return '%s' % (', '.join(target_names[x] for x in labels))
 
-#===============================================================================
-# if __name__=='__main__':
-#     analyze(sys.argv[1])
-#===============================================================================
+
+if __name__=='__main__':
+    analyze(os.path.dirname(__file__))

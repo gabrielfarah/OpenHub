@@ -5,3 +5,4 @@ pika==0.9.13
 pymongo==2.5.2
 requests==1.2.3
 wsgiref==0.1.2
+radon==0.43
