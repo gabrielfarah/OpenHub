@@ -115,7 +115,7 @@ def callback(ch, method, properties, body):
                 test_name = test.split()[1]
 
                 try:
-                    res = m.run_test(repo_id, path, data)
+                    res = m.run_test(repo_id, path, repo_json)
                     repo_json[d] = []
                     data = {'name': test_name, 'value': res}
                     repo_json[d].append(data)

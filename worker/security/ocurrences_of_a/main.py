@@ -3,14 +3,14 @@ import os
 #Nombre que identifica la pruena
 #Tipo de retorno de la prueba
 #  1= yes(1) - no(0) , 2= 1-10
-#addData En caso de necesitar informacion extra de la db
+#addData En caso de necesitar informacion extra de la repo_db
 # true(1)/false(0)
 
 name = "occurrences of a"
 type = 1
 
 
-def run_test(id, path, db):
+def run_test(id, path, repo_db):
     print "secure 1"
     print 'reading files'
     #numbres of a

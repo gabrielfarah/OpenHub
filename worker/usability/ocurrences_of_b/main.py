@@ -11,7 +11,7 @@ name = "occurrences of b"
 type = 1
 
 
-def run_test(id, path, db):
+def run_test(id, path, repo_db):
     print "secure 1"
     print 'reading files'
     #numbres of a
