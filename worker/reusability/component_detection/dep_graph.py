@@ -4,7 +4,7 @@ import networkx as nx
 import itertools
 
 
-class Dependency_Graph:
+class Dependency_Graph(object):
 
     def __init__(self, path):
         self.G = nx.DiGraph()
