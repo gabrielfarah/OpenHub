@@ -1,5 +1,9 @@
+GitPython==0.3.2.RC1
+argparse==1.2.1
 astroid==1.0.0
+async==0.6.1
 distribute==0.6.34
+gitdb==0.5.4
 github3.py==0.7.0
 logilab-common==0.60.0
 networkx==1.8.1
@@ -7,4 +11,5 @@ pika==0.9.13
 pylint==1.0.0
 pymongo==2.5.2
 requests==1.2.3
+smmap==0.8.2
 wsgiref==0.1.2
