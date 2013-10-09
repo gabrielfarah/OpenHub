@@ -107,16 +107,16 @@ def callback(ch, method, properties, body):
 
         for d in dirs:
             print "Analyzing %s..." % d
-            tests = [p.replace('/', '.') for p in glob.glob("%s/*" % d) if not p.endswith(".py")]  # Test list in the directories
+            tests = [p.replace('/', '.') for p in glob.glob("%s/*" % d) if os.path.isdir(p)]  # Test list in the directory
 
-            print "Current tests for %s: %s" % d, tests
+            print "Current tests for %s: %s" % (d, tests)
+            repo_json[d] = []
+
             for test in tests:
                 m = importlib.import_module(test + ".main")
-                test_name = test.split()[1]
-
+                test_name = test.split('.')[1]
                 try:
                     res = m.run_test(repo_id, path, repo_json)
-                    repo_json[d] = []
                     data = {'name': test_name, 'value': res}
                     repo_json[d].append(data)
                 except Exception as e:
@@ -143,6 +143,9 @@ def callback(ch, method, properties, body):
 
         collection.update({"_id": repo_id}, {'$set': {'state': 'failed', 'analyzed_at': datetime.datetime.now()}})
         print "Updated repo with failed status"
+
+        print "Deleting files..."
+        delete_repo(path)
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
         print "Will continue. Waiting for next repo..."

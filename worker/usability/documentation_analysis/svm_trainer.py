@@ -29,7 +29,7 @@ for path in training_data_paths:
         else:
             training_list_Y.append([2])
 X_train = np.array(training_list_X)
-y_train = training_list_Y   
+y_train = training_list_Y
 #===============================================================================
 # target_names = ['New York', 'London']
 #===============================================================================
@@ -40,7 +40,7 @@ classifier = Pipeline([
     ('clf', OneVsRestClassifier(LinearSVC()))])
 classifier.fit(X_train, y_train)
 
-joblib.dump(classifier, './pickles/classifier.pkl')
+joblib.dump(classifier, './pickles/classifier.pkl', compress=3)
 #===============================================================================
 # classifier2 = joblib.load('./pickles/classifier.pkl')
 # predicted = classifier2.predict(X_test)

@@ -23,8 +23,8 @@ def run_test(id, path, repo_db):
     contribs, commits = get_contrib_and_commit_num('https://api.github.com/repos/'+repo_db['full_name']+'/stats/contributors', (usr, pwd))
 
     res = sum((contribs*0.15, forks*0.15, watchers*0.2, stars*0.2, commits*0.15, comments*0.05, issues*0.05, positive*0.05))
-    print res
-    return res
+    print "Popularity Index:", res
+    return {'popularity_index': res}
 
 
 def analyze_sentiment(urls, auth):

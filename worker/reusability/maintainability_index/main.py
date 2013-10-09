@@ -3,16 +3,16 @@ Created on Sep 9, 2013
 
 @author: gabo
 '''
-from radon.metrics import mi_visit, mi_parameters, mi_rank 
-from radon.raw import analyze 
+from radon.metrics import mi_visit, mi_parameters, mi_rank
+from radon.raw import analyze
 from radon.complexity import cc_visit
 import os
 
 #===============================================================================
-# Maintainability Index is asoftware metric which measures how maintainable 
-# (easy to support and change) thesource code is. The maintainability index 
+# Maintainability Index is asoftware metric which measures how maintainable
+# (easy to support and change) thesource code is. The maintainability index
 # is calculated as a factored formula consisting of SLOC (Source Lines Of Code),
-#  Cyclomatic Complexity and Halstead volume. 
+#  Cyclomatic Complexity and Halstead volume.
 #===============================================================================
 def get_maintenability_index(content):
     return  mi_visit(content,False)
@@ -30,17 +30,17 @@ def get_code_metrics(content):
     var = analyze(content)
     return float(var[3]+var[4])/(var[1])
 #===============================================================================
-# returns a list of blocks with respect to complexity. A block is a either Function object or a Class object. 
+# returns a list of blocks with respect to complexity. A block is a either Function object or a Class object.
 #===============================================================================
 def get_cyclomatic_complexity(content):
     return cc_visit(content)
 
-def main(rootdir):
+def run_test(id, path, repo_db):
     num_files = 0
     avg_maintenability = 0
     avg_documentation = 0
     response = {}
-    for root, subFolders, files in os.walk(rootdir):
+    for root, subFolders, files in os.walk(path):
         for file in files:
             if (file.endswith('.py')):
                 #print file
