@@ -1,0 +1,80 @@
+{
+    "_id" : 312,
+    "issues_url" : "https://api.github.com/repos/brosner/django-mptt/issues{/number}",
+    "has_wiki" : true,
+    "collaborators_url" : "https://api.github.com/repos/brosner/django-mptt/collaborators{/collaborator}",
+    "updated_at" : ISODate("2013-06-02T08:10:40Z"),
+    "full_name" : "brosner/django-mptt",
+    "owner" : {
+        "type" : "User",
+        "repos_url" : "https://api.github.com/users/brosner/repos",
+        "html_url" : "https://github.com/brosner"
+    },
+    "size" : 92,
+    "network_count" : 144,
+    "has_downloads" : true,
+    "state" : "completed",
+    "forks" : 1,
+    "homepage" : "http://code.google.com/p/django-mptt/",
+    "fork" : true,
+    "description" : "utilities for implementing a modified pre-order traversal tree in django",
+    "archive_url" : "https://api.github.com/repos/brosner/django-mptt/{archive_format}{/ref}",
+    "comments_url" : "https://api.github.com/repos/brosner/django-mptt/comments{/number}",
+    "contributors_url" : "https://api.github.com/repos/brosner/django-mptt/contributors",
+    "html_url" : "https://github.com/brosner/django-mptt",
+    "analyzed_at" : ISODate("2013-10-09T12:02:29.074Z"),
+    "git_url" : "git://github.com/brosner/django-mptt.git",
+    "has_issues" : true,
+    "languages_url" : "https://api.github.com/repos/brosner/django-mptt/languages",
+    "reusability" : [
+        {
+            "name" : "maintainability_index",
+            "value" : {
+                "maintenability_index" : 73.94223162412139,
+                "documentation_index" : 7856.142582772512
+            }
+        }
+    ],
+    "watchers" : 61,
+    "name" : "django-mptt",
+    "language" : "Python",
+    "url" : "https://api.github.com/repos/brosner/django-mptt",
+    "created_at" : ISODate("2008-02-06T17:37:55Z"),
+    "testability" : [
+        {
+            "name" : "cyclomatic_complexity",
+            "value" : {
+                "test_coverage" : -20.492124542124543,
+                "non_mantenible_files" : 0,
+                "avg_cc" : 2.7910103785103786
+            }
+        }
+    ],
+    "open_issues" : 0,
+    "security" : [
+        {
+            "name" : "code_check",
+            "value" : {
+                "C" : 114,
+                "R" : 28,
+                "E" : 96,
+                "W" : 92,
+                "F" : 21
+            }
+        }
+    ],
+    "subscribers_url" : "https://api.github.com/repos/brosner/django-mptt/subscribers",
+    "stargazers_url" : "https://api.github.com/repos/brosner/django-mptt/stargazers",
+    "usability" : [
+        {
+            "name" : "popularity",
+            "value" : {
+                "popularity_index" : 33.8
+            }
+        },
+        {
+            "name" : "documentation_analysis",
+            "value" : "Nothing"
+        }
+    ]
+}
