@@ -16,36 +16,42 @@ def run_test(id, path, repo_db):
 
     # Init counts
     results = {'R': 0, 'C': 0, 'W': 0, 'E': 0, 'F': 0}
-    files = [os.path.join(dirpath, f)
-                 for dirpath, dirnames, files in os.walk(path)
-                 for f in files if f.endswith('.py')]
-    # print "Inputting .py files to linter:", files
 
     # Setup the environment
     backup = sys.stdout
 
-    for path in files:
-        sys.stdout = StringIO()
-        Run(['--reports=n', path], exit=False)
-        out = sys.stdout.getvalue() # release output
-        sys.stdout.close()  # close the stream
+    try:
+        print "Inputting .py files to linter"
+        for dirpath, dirnames, files in os.walk(path):
+            for f in files:
+                if f.endswith('.py'):
+                    fpath = os.path.join(dirpath, f)
 
-        for l in out.split('\n')[1:]:
-            if l.startswith('R'):
-                results['R'] += 1
-            if l.startswith('C'):
-                results['C'] += 1
-            if l.startswith('W'):
-                results['W'] += 1
-            if l.startswith('E'):
-                results['E'] += 1
-            if l.startswith('F'):
-                results['F'] += 1
+                    sys.stdout = StringIO()
+                    Run(['--reports=n', fpath], exit=False)
+                    out = sys.stdout.getvalue() # release output
+                    sys.stdout.close()  # close the stream
 
-    sys.stdout = backup # restore original stdout
-    # print "Done linting files for", repo_db['full_name']
-    # print results
-    return results
+                    for l in out.split('\n')[1:]:
+                        if l.startswith('R'):
+                            results['R'] += 1
+                        if l.startswith('C'):
+                            results['C'] += 1
+                        if l.startswith('W'):
+                            results['W'] += 1
+                        if l.startswith('E'):
+                            results['E'] += 1
+                        if l.startswith('F'):
+                            results['F'] += 1
+
+        sys.stdout = backup # restore original stdout
+        print "Done linting files for", repo_db['full_name']
+        # print results
+        return results
+    except Exception as e:
+        raise e
+    finally:
+        sys.stdout = backup # restore original stdout
 
 
 if __name__ == '__main__':

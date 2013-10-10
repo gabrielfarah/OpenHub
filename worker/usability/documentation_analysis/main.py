@@ -32,11 +32,12 @@ def load_and_clear_file(local_path):
 def run_test(id, path, repo_db):
     for root, subFolders, files in os.walk(path):
         for f in files:
-            if (f.endswith('.md') or f.endswith('.rst') or f.endswith('.rdoc')) and not 'license' in f.lower():
+            if 'README' in f.upper():
+                print "Analyzing README docs"
                 clean_html = load_and_clear_file(os.path.join(root, f))
                 result_list = features_extraction(clean_html)
                 #Load the saved classifier
-                classifier = joblib.load('./pickles/classifier.pkl')
+                classifier = joblib.load(os.path.dirname(os.path.realpath(__file__))+'/pickles/classifier.pkl')
                 #convert our list of headers to an array
                 X_test = np.array([result_list])
                 target_names = ['Bad', 'Average', 'Good']
@@ -44,6 +45,8 @@ def run_test(id, path, repo_db):
                 predicted = classifier.predict(X_test)
                 for labels in  predicted:
                     return '%s' % (', '.join(target_names[x] for x in labels))
+    print "No README file"
+    return "Bad"
 
 
 if __name__=='__main__':

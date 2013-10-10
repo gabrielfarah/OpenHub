@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-DATA_PATH = os.path.dirname(__file__)
+DATA_PATH = os.path.dirname(os.path.realpath(__file__))
 API_URL = ''
 API_KEY = ''
 POSITIVE = 'positive'
