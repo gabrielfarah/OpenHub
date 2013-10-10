@@ -15,7 +15,10 @@ import os
 #  Cyclomatic Complexity and Halstead volume.
 #===============================================================================
 def get_maintenability_index(content):
-    return  mi_visit(content,False)
+    try:
+        return  mi_visit(content,False)
+    except:
+        return 0
 
 #===============================================================================
 # Analyze the source code and return a namedtuple with the following fields:
@@ -27,13 +30,19 @@ def get_maintenability_index(content):
 #         blank: The number of blank lines (or whitespace-only ones)
 #===============================================================================
 def get_code_metrics(content):
-    var = analyze(content)
-    return float(var[3]+var[4])/(var[1])
+    try:
+        var = analyze(content)
+        return float(var[3]+var[4])/(var[1])
+    except:
+        return 0
 #===============================================================================
 # returns a list of blocks with respect to complexity. A block is a either Function object or a Class object.
 #===============================================================================
 def get_cyclomatic_complexity(content):
-    return cc_visit(content)
+    try:
+        return cc_visit(content)
+    except:
+        return 0 
 
 def run_test(id, path, repo_db):
     num_files = 0
