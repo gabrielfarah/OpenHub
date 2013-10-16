@@ -25,7 +25,7 @@ class Dependency_Graph(object):
             for line in f.readlines():
                 self.__add_import_to_graph(line, f_name, modules)
             f.close()
-        print self.G.edges()
+        # print self.G.edges()
 
     def __add_import_to_graph(self, line, origin, modules):
         line.strip()
@@ -53,7 +53,16 @@ class Dependency_Graph(object):
         if dest in modules:
             self.G.add_edge(origin, dest)
 
+
     def get_independent_components(self):
+        components = set()
+
+        for node in self.G.nodes_iter():
+            components.add(frozenset(nx.dfs_tree(self.G, node)))
+
+        return components
+
+    def get_independent_components_exp(self):
         components = set()
 
         for node in self.G.nodes_iter():

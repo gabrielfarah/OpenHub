@@ -10,8 +10,8 @@ def run_test(id, path, repo_db):
 
 
 def reusability_index(DiG, knots):
-    return 1 - (len(knots) / len(DiG.G.nodes()))
+    return 1 - (float(len(knots)) / len(DiG.G.nodes()))
 
 
 if __name__ == '__main__':
-    run_test(None, os.path.dirname(__file__), None)
+    run_test(None, os.path.dirname(__file__)+'/../../zFileTemp/django-mptt', None)

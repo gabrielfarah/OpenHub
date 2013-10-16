@@ -70,8 +70,7 @@ def main():
 def down_repo(git_url, path):
     """Download repo from specified url into path."""
 
-    if os.path.exists(path):
-        delete_repo(path)
+    delete_repo(path)
 
     firts = os.getcwd()
     os.chdir("%s/%s/" % (firts, BASE_DIR))
@@ -86,7 +85,8 @@ def down_repo(git_url, path):
 
 def delete_repo(path):
     """Delete repo from path."""
-    shutil.rmtree(path)
+    if os.path.exists(path):
+        shutil.rmtree(path)
 
 
 def callback(ch, method, properties, body):
