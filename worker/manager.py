@@ -120,9 +120,8 @@ def callback(ch, method, properties, body):
                     data = {'name': test_name, 'value': res}
                     repo_json[d].append(data)
                 except Exception as e:
-                    print 'Test error %s %s' % (d, test)
-                    print e
-                    data = {'name': test_name, 'value': "Error:" + e.message}
+                    print 'Test error: %s %s' % (test, str(e))
+                    data = {'name': test_name, 'value': "Error:" + str(e)}
                     repo_json[d].append(data)
                     completed = False
                     pass
@@ -139,7 +138,7 @@ def callback(ch, method, properties, body):
         print "Ready, waiting for next repo..."
 
     except Exception as e:
-        print "General error:", e
+        print "General error:", str(e)
 
         collection.update({"_id": repo_id}, {'$set': {'state': 'failed', 'analyzed_at': datetime.datetime.now()}})
         print "Updated repo with failed status"
