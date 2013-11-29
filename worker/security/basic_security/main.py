@@ -58,19 +58,4 @@ def run_test(id, path, repo_db):
 
 
 if __name__ == '__main__':
-    #===========================================================================
-    # print find_sql_injection("asdfasdf.execute( query % params) asdf")
-    # print find_sql_injection("asdfasdf.execute( \"query\" % params) asdf")
-    # print find_sql_injection("asdfasdf.execute( \"select table_users where id = \" % params) asdf")
-    # print find_crypto("import sha5, md5")
-    # print find_crypto("import md5")
-    # print find_crypto("import sha5, md6,md5")
-    # print find_crypto("from Crypto.Hash import MD5")
-    # print find_hashlib("import sha5, md6,md5, hashlib")
-    # print find_ssl("import sha5, md6,md5, ssl, hashlib")
-    # print find_crypto("import sha5, md6,md5, ssl, hashlib")
-    # print find_debug_mode_on(""" <html> asdfasdf sdfasdfsdfa  import asdfasdf asdfaasdfa  asdfadf sadfasdfasdf   debug = true """)
-    # print find_xss_defense(""" < .html> asdfasdf sdfasdfsdfa  import asdfasdf asdfaasdfa  asdfadf sadfasdfasdf   debug = true  hghgfgfjgh  render """ )
-    # print find_xss_defense(""" < .html> asdfasdf  template sdfasdfsdfa  import .escape asdfasdf asdfaasdfa  asdfadf sadfasdfasdf   debug = true  hghgfgfjgh  render """ )
-    #===========================================================================
     print run_test(None, os.path.dirname(__file__), None)

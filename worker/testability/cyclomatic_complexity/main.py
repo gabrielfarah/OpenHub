@@ -41,9 +41,9 @@ def run_test(id, path, repo_db):
                             if lines2.find("test") != -1:
                                 num_tests += 1
                 content_file.close()
-    response["avg_cc"] = total_cyclomatic_complexity/num_files
+    response["avg_cc"] = (total_cyclomatic_complexity / num_files)
     response["non_mantenible_files"] = non_mantenible_files
-    response["test_coverage"] = num_tests - total_cyclomatic_complexity
+    response["test_coverage"] = (num_tests / total_cyclomatic_complexity)
     return response
 
 

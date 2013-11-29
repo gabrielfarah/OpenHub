@@ -63,8 +63,8 @@ def run_test(id, path, repo_db):
                     #print get_cyclomatic_complexity(content)
                     num_files += 1
                 content_file.close()
-    response["maintenability_index"] = avg_maintenability/num_files
-    response["documentation_index"] = (avg_documentation/num_files)*100
+    response["maintenability_index"] = (avg_maintenability/num_files)
+    response["documentation_index"] = (avg_documentation/num_files)
     return response
 
 if __name__ == '__main__':
