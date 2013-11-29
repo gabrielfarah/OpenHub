@@ -17,12 +17,12 @@ def run_test(id, path, repo_db):
 
     urls = {'comments_url': repo_db['comments_url'], 'issues_url': repo_db['issues_url']}
 
-    issues, watchers, network_count, forks = map(int, (repo_db['open_issues'], repo_db['watchers'], repo_db['network_count'], repo_db['forks']))
+    issues_count, subscribers_count, forks_count, stargazers_count = map(int, (repo_db['open_issues'], repo_db['subscribers_count'], repo_db['forks'], repo_db['stargazers_count']))
     comments, positive, neutral, negative = analyze_sentiment(urls, (usr, pwd))
-    stars = get_stargazers_count(repo_db['stargazers_url'], (usr, pwd))
+    # stargazers_count = get_stargazers_count(repo_db['stargazers_url'], (usr, pwd))
     contribs, commits = get_contrib_and_commit_num('https://api.github.com/repos/'+repo_db['full_name']+'/stats/contributors', (usr, pwd))
 
-    res = sum((contribs*0.15, forks*0.15, watchers*0.2, stars*0.2, commits*0.15, comments*0.05, issues*0.05, positive*0.05))
+    res = sum((contribs*0.15, forks_count*0.15, subscribers_count*0.2, stargazers_count*0.2, commits*0.15, comments*0.025, issues_count*0.1, positive*0.025))
     print "Popularity Index:", res
     return {'popularity_index': res}
 

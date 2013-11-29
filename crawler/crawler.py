@@ -101,7 +101,9 @@ def start_crawl(repos, db_repos, gh, channel, last_id):
                          "contributors_url": json_repo[u'contributors_url'],
                          "html_url": repo.html_url,
                          "subscribers_url": json_repo[u'subscribers_url'],
+                         "subscribers_count": json_repo[u'subscribers_count'],
                          "stargazers_url": json_repo[u'stargazers_url'],
+                         "stargazers_count": json_repo[u'stargazers_count'],
                          "owner": {"html_url": json_repo[u'owner'][u'html_url'],
                                    "type": json_repo[u'owner'][u'type'],
                                    "repos_url": json_repo[u'owner'][u'repos_url']}

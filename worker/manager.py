@@ -8,11 +8,12 @@ import git
 import os
 import json
 import datetime
+import traceback
 from pymongo import MongoClient
 
 DATA_PATH = '../data'
-
-BASE_DIR = 'zFileTemp'
+BASE_DIR = ''
+REPO_DOWNLOAD_DIR = ''
 
 RABBIT_HOST = ''
 RABBIT_USER = ''
@@ -72,15 +73,21 @@ def down_repo(git_url, path):
 
     delete_repo(path)
 
-    firts = os.getcwd()
-    os.chdir("%s/%s/" % (firts, BASE_DIR))
+    try:
+        # first = os.getcwd()
+        # os.chdir("%s/%s/" % (first, BASE_DIR))
+        os.chdir(REPO_DOWNLOAD_DIR)
 
-    print "Downloading code..."
-    print git.Git().clone(git_url)
+        print "Downloading code..."
+        print git.Git().clone(git_url)
 
-    os.chdir(firts)
-
-    print "Done"
+        # os.chdir(first)
+        os.chdir(BASE_DIR)
+        print "Done"
+    except Exception as e:
+        raise e
+    finally:
+        os.chdir(BASE_DIR)
 
 
 def delete_repo(path):
@@ -110,19 +117,21 @@ def callback(ch, method, properties, body):
             tests = [p.replace('/', '.') for p in glob.glob("%s/*" % d) if os.path.isdir(p)]  # Test list in the directory
 
             print "Current tests for %s: %s" % (d, tests)
-            repo_json[d] = []
+            # repo_json[d] = []
+            repo_json[d] = {}
 
             for test in tests:
                 m = importlib.import_module(test + ".main")
                 test_name = test.split('.')[1]
                 try:
                     res = m.run_test(repo_id, path, repo_json)
-                    data = {'name': test_name, 'value': res}
-                    repo_json[d].append(data)
+                    # data = {'name': test_name, 'value': res}
+                    # repo_json[d].append(data)
+                    repo_json[d][test_name] = res
                 except Exception as e:
                     print 'Test error: %s %s' % (test, str(e))
-                    data = {'name': test_name, 'value': "Error:" + str(e)}
-                    repo_json[d].append(data)
+                    # data = {'name': test_name, 'value': "Error:" + str(e)}
+                    repo_json[d][test_name] = {'error': "Error:" + str(e), 'stack_trace': traceback.format_exc()}
                     completed = False
                     pass
 
@@ -140,7 +149,7 @@ def callback(ch, method, properties, body):
     except Exception as e:
         print "General error:", str(e)
 
-        collection.update({"_id": repo_id}, {'$set': {'state': 'failed', 'analyzed_at': datetime.datetime.now()}})
+        collection.update({"_id": repo_id}, {'$set': {'state': 'failed', 'analyzed_at': datetime.datetime.now(), 'error': 'General error:' + str(e), 'stack_trace': traceback.format_exc()}})
         print "Updated repo with failed status"
 
         print "Deleting files..."
@@ -152,7 +161,13 @@ def callback(ch, method, properties, body):
 
 
 def load_config():
-    global RABBIT_HOST, RABBIT_USER, RABBIT_PWD, RABBIT_KEY, RABBIT_QUEUE, MONGO_PWD, MONGO_USER, MONGO_HOST, MONGO_PORT, MONGO_DB, MONGO_COLL, dirs
+    global BASE_DIR, REPO_DOWNLOAD_DIR, RABBIT_HOST, RABBIT_USER, RABBIT_PWD, RABBIT_KEY, RABBIT_QUEUE, MONGO_PWD, MONGO_USER, MONGO_HOST, MONGO_PORT, MONGO_DB, MONGO_COLL, dirs
+
+    paths_cfg = open(DATA_PATH + "/paths.json")
+    data = json.load(paths_cfg)
+    BASE_DIR = str(data['BASE_DIR'])
+    REPO_DOWNLOAD_DIR = str(data['REPO_DOWNLOAD_DIR'])
+    paths_cfg.close()
 
     rabbit_cfg = open(DATA_PATH + "/rabbit.json")
     data = json.load(rabbit_cfg)
