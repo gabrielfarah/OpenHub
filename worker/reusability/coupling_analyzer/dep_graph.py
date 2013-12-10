@@ -20,11 +20,16 @@ class Dependency_Graph(object):
         # print modules
 
         for path, f_name in files:
-            f_name = f_name[:-3]
-            f = open(path)
-            for line in f.readlines():
-                self.__add_import_to_graph(line, f_name, modules)
-            f.close()
+            try:
+                f_name = f_name[:-3]
+                pyfile = open(path)
+                for line in pyfile.readlines():
+                    self.__add_import_to_graph(line, f_name, modules)
+                pyfile.close()
+            except:
+                raise
+            finally:
+                pyfile.close()
         # print self.G.edges()
 
     def __add_import_to_graph(self, line, origin, modules):

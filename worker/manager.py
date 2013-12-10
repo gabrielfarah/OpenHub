@@ -4,12 +4,18 @@ import logging
 import importlib
 import glob
 import shutil
-import git
 import os
 import json
 import datetime
 import traceback
+import requests
+import zipfile
+import StringIO
+import signal
+from openhub_exceptions import TimeoutException
 from pymongo import MongoClient
+from contextlib import contextmanager
+
 
 DATA_PATH = '../data'
 BASE_DIR = ''
@@ -72,20 +78,20 @@ def down_repo(git_url, path):
     """Download repo from specified url into path."""
 
     delete_repo(path)
-
     try:
-        # first = os.getcwd()
-        # os.chdir("%s/%s/" % (first, BASE_DIR))
         os.chdir(REPO_DOWNLOAD_DIR)
 
         print "Downloading code..."
-        print git.Git().clone(git_url)
+        # print git.Git().clone(git_url)
+        # subprocess.call(['git', 'clone', git_url], close_fds=True)
+        r = requests.get(git_url)
+        z = zipfile.ZipFile(StringIO.StringIO(r.content))
+        z.extractall()
 
-        # os.chdir(first)
         os.chdir(BASE_DIR)
         print "Done"
-    except Exception as e:
-        raise e
+    except:
+        raise
     finally:
         os.chdir(BASE_DIR)
 
@@ -94,6 +100,18 @@ def delete_repo(path):
     """Delete repo from path."""
     if os.path.exists(path):
         shutil.rmtree(path)
+
+
+@contextmanager
+def time_limit(seconds):
+    def signal_handler(signum, frame):
+        raise TimeoutException, "Timed out!"
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
 
 
 def callback(ch, method, properties, body):
@@ -106,10 +124,11 @@ def callback(ch, method, properties, body):
     name = data[2]
     print " [x] Received %r" % (data,)
 
-    path = '%s/%s' % (BASE_DIR, name)
+    path = '%s/%s' % (REPO_DOWNLOAD_DIR, name + '-master')
     try:
         repo_json = collection.find_one({"_id": repo_id})
-        down_repo(git_url, path)
+        # down_repo(git_url, path)
+        down_repo(repo_json['html_url'] + '/archive/master.zip', path)
         completed = True
 
         for d in dirs:
@@ -124,10 +143,11 @@ def callback(ch, method, properties, body):
                 m = importlib.import_module(test + ".main")
                 test_name = test.split('.')[1]
                 try:
-                    res = m.run_test(repo_id, path, repo_json)
-                    # data = {'name': test_name, 'value': res}
-                    # repo_json[d].append(data)
-                    repo_json[d][test_name] = res
+                    with time_limit(300):
+                        res = m.run_test(repo_id, path, repo_json)
+                        # data = {'name': test_name, 'value': res}
+                        # repo_json[d].append(data)
+                        repo_json[d][test_name] = res
                 except Exception as e:
                     print 'Test error: %s %s' % (test, str(e))
                     # data = {'name': test_name, 'value': "Error:" + str(e)}
@@ -144,7 +164,8 @@ def callback(ch, method, properties, body):
         delete_repo(path)
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        print "Ready, waiting for next repo..."
+        print " [x] Ready, waiting for next repo...\n"
+        print "------------------------------------\n"
 
     except Exception as e:
         print "General error:", str(e)
@@ -156,7 +177,8 @@ def callback(ch, method, properties, body):
         delete_repo(path)
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        print "Will continue. Waiting for next repo..."
+        print "Will continue. Waiting for next repo...\n"
+        print "------------------------------------\n"
         # TODO Terminar de manejar los errores
 
 

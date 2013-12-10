@@ -104,10 +104,12 @@ def start_crawl(repos, db_repos, gh, channel, last_id):
                          "subscribers_count": json_repo[u'subscribers_count'],
                          "stargazers_url": json_repo[u'stargazers_url'],
                          "stargazers_count": json_repo[u'stargazers_count'],
-                         "owner": {"html_url": json_repo[u'owner'][u'html_url'],
-                                   "type": json_repo[u'owner'][u'type'],
-                                   "repos_url": json_repo[u'owner'][u'repos_url']}
+                         "owner": {
+                            "html_url": json_repo[u'owner'][u'html_url'],
+                            "type": json_repo[u'owner'][u'type'],
+                            "repos_url": json_repo[u'owner'][u'repos_url']
                          }
+                        }
 
             if db_repo:
                 del to_insert['_id']
@@ -126,6 +128,14 @@ def start_crawl(repos, db_repos, gh, channel, last_id):
                     print "Updated repo with id %s. No analysis necessary. Will not push to queue" % last_id
 
             else:
+                to_insert["testability"] = {"cyclomatic_complexity": None}
+                to_insert["reusability"] = {"maintainability_index": None,
+                                            "coupling_analyzer": None}
+                to_insert["security"] = {"basic_security": None,
+                                         "code_linter": None}
+                to_insert["usability"] = {"documentation_analysis": None,
+                                          "popularity_index": None}
+
                 last_id = db_repos.insert(to_insert)
                 print "Inserted repo with id", last_id
                 push_to_queue(repo, channel)

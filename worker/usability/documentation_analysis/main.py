@@ -40,13 +40,12 @@ def run_test(id, path, repo_db):
                 classifier = joblib.load(os.path.dirname(os.path.realpath(__file__))+'/pickles/model.pkl')
                 #convert our list of headers to an array
                 X_test = np.array([result_list])
-                target_names = ['Bad', 'Average', 'Good']
+                # target_names = ['Bad', 'Average', 'Good']
                 #predict the class
-                predicted = classifier.predict(X_test)
-                for labels in  predicted:
-                    return '%s' % (', '.join(target_names[x] for x in labels))
+                return int(classifier.predict(X_test))
+
     print "No README file"
-    return "Bad"
+    return 0
 
 
 if __name__=='__main__':

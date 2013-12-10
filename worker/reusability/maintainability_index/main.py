@@ -6,6 +6,7 @@ Created on Sep 9, 2013
 from radon.metrics import mi_visit, mi_parameters, mi_rank
 from radon.raw import analyze
 from radon.complexity import cc_visit
+from openhub_exceptions import TimeoutException
 import os
 
 #===============================================================================
@@ -17,6 +18,8 @@ import os
 def get_maintenability_index(content):
     try:
         return  mi_visit(content,False)
+    except TimeoutException as e:
+        raise e
     except:
         return 0
 
@@ -33,6 +36,8 @@ def get_code_metrics(content):
     try:
         var = analyze(content)
         return float(var[3]+var[4])/(var[1])
+    except TimeoutException as e:
+        raise e
     except:
         return 0
 #===============================================================================
@@ -41,28 +46,34 @@ def get_code_metrics(content):
 def get_cyclomatic_complexity(content):
     try:
         return cc_visit(content)
+    except TimeoutException as e:
+        raise e
     except:
-        return 0 
+        return 0
 
 def run_test(id, path, repo_db):
     num_files = 0
     avg_maintenability = 0
     avg_documentation = 0
     response = {}
+    print "Calculating maintainability on source..."
     for root, subFolders, files in os.walk(path):
         for file in files:
             if (file.endswith('.py')):
-                #print file
+                # print file
                 with open(os.path.join(root, file), 'r') as content_file:
                     content = content_file.read()
                     avg_maintenability += get_maintenability_index(content)
                     try:
                         avg_documentation += get_code_metrics(content)
+                    except TimeoutException as e:
+                        raise e
                     except:
                         pass
                     #print get_cyclomatic_complexity(content)
                     num_files += 1
                 content_file.close()
+    print "Done"
     response["maintenability_index"] = (avg_maintenability/num_files)
     response["documentation_index"] = (avg_documentation/num_files)
     return response

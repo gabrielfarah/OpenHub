@@ -19,12 +19,12 @@ def run_test(id, path, repo_db):
 
     # Setup the environment
     backup = sys.stdout
-
     try:
         print "Inputting .py files to linter"
+
         for dirpath, dirnames, files in os.walk(path):
             for f in files:
-                if f.endswith('.py'):
+                if f.endswith('.py') and f != "setup.py": # partial awful fix, need to look into linter for this horrible bug
                     fpath = os.path.join(dirpath, f)
 
                     sys.stdout = StringIO()
@@ -48,8 +48,8 @@ def run_test(id, path, repo_db):
         print "Done linting files for", repo_db['full_name']
         # print results
         return results
-    except Exception as e:
-        raise e
+    except:
+        raise
     finally:
         sys.stdout = backup # restore original stdout
 
