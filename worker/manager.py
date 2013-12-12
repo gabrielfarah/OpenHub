@@ -143,7 +143,7 @@ def callback(ch, method, properties, body):
                 m = importlib.import_module(test + ".main")
                 test_name = test.split('.')[1]
                 try:
-                    with time_limit(300):
+                    with time_limit(120):
                         res = m.run_test(repo_id, path, repo_json)
                         # data = {'name': test_name, 'value': res}
                         # repo_json[d].append(data)
