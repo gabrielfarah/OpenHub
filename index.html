@@ -1,66 +1,71 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <meta name="description" content="Openhub : Bringing together code">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Openhub by gabrielfarah</title>
+    <title>Openhub</title>
   </head>
 
   <body>
-    <header>
-      <div class="inner">
-        <h1>Openhub</h1>
-        <h2>Bringing together code</h2>
-        <a href="https://github.com/gabrielfarah/OpenHub" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h3>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/gabrielfarah/OpenHub">View on GitHub</a>
+
+          <h1 id="project_title">Openhub</h1>
+          <h2 id="project_tagline">Bringing together code</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gabrielfarah/OpenHub/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gabrielfarah/OpenHub/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
 <a name="welcome-to-openhub" class="anchor" href="#welcome-to-openhub"><span class="octicon octicon-link"></span></a>Welcome to OpenHub.</h3>
 
 <p>There is currently a vast array of open source projects available on the web, and although they are searchable by name or description in the search engines, there is no way to search for projects by how well they perform on a given set of quality attributes (e.g. usability or maintainability). With OpenHub, we present a scalable and extensible architecture for the static and runtime analysis of open source repositories, initially written in Python. </p>
 
+<p><img src="https://camo.githubusercontent.com/b685775c99bcbbae4e6f068e4279fe4376b441cf/68747470733a2f2f7261772e6769746875622e636f6d2f6761627269656c66617261682f4f70656e4875622f6d61737465722f646f63732f696d616765732f4f70656e4875625f4172636869746563747572652e706e67" alt="Architecture overview"></p>
+
+<p>Millions of repositories were analyzed using this architecture and Github platform. For these repositories, software quality metrics are calculated and stored in a mongodb setup (Check a base example <a href="https://github.com/gabrielfarah/OpenHub/tree/master/examples">here</a>).</p>
+
+<h2>
+<a name="why-it-matters" class="anchor" href="#why-it-matters"><span class="octicon octicon-link"></span></a>Why it matters?</h2>
+
+<p>Using the results from the analyzing process, researchers can perform comparative analysis over the quality metrics and developers can create cool stuff like firefox plugins to extend the github search results with the quality metrics. </p>
+
 <h3>
 <a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
 
-<p>Gabriel Farah Garcia (<a href="https://github.com/gabrielfarah" class="user-mention">@gabrielfarah</a>), Juan Tejada (<a href="https://github.com/jstejada" class="user-mention">@jstejada</a>).</p>
+<p>Gabriel Farah Garcia (<a href="https://github.com/gabrielfarah" class="user-mention">@gabrielfarah</a>), Juan Tejada (<a href="https://github.com/jstejada" class="user-mention">@jstejada</a>) and Dario Correal.</p>
 
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
 <p><a href="mailto:g.farah38@uniandes.edu.co">g.farah38@uniandes.edu.co</a></p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/gabrielfarah/OpenHub/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/gabrielfarah/OpenHub/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/gabrielfarah/OpenHub"></a> is maintained by <a href="https://github.com/gabrielfarah">gabrielfarah</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
     </div>
 
-  
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Openhub maintained by <a href="https://github.com/gabrielfarah">gabrielfarah</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
   </body>
 </html>
